@@ -1,5 +1,3 @@
-// src/auth/auth.service.ts
-
 import { 
   Injectable, 
   UnauthorizedException, 
@@ -93,7 +91,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid session');
     }
 
-    // Revoke the session
     await this.prisma.session.update({
       where: { id: sessionId },
       data: { 
@@ -109,7 +106,6 @@ export class AuthService {
   }
 
   async logoutAll(userId: string, currentSessionId: string): Promise<LogoutResponseDto> {
-    // Revoke all sessions except current
     await this.tokenService.revokeAllUserSessions(userId, currentSessionId);
     
     return {
@@ -147,7 +143,6 @@ export class AuthService {
       data: { password: hashedNewPassword },
     });
 
-    // Generate new tokens and create new session
     const tokens = await this.tokenService.generateTokenPair(
       { sub: user.id, email: user.email },
       { 
@@ -156,7 +151,6 @@ export class AuthService {
       }
     );
 
-    // Revoke all other sessions
     await this.tokenService.revokeAllUserSessions(userId, tokens.sessionId);
 
     return {
@@ -165,7 +159,6 @@ export class AuthService {
     };
   }
 
-  // Social Login Methods
   async googleLogin(dto: GoogleAuthDto, metadata?: SessionMetadata) {
     return this.socialLogin({
       identifier: dto.accessToken,

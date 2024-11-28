@@ -15,7 +15,6 @@ function generateKeys() {
     }
   });
 
-  // Ensure certs directory exists
   const certsPath = path.join(process.cwd(), 'certs');
   try {
     mkdirSync(certsPath);
@@ -23,7 +22,6 @@ function generateKeys() {
     if (error.code !== 'EEXIST') throw error;
   }
 
-  // Write keys to files
   writeFileSync(`${certsPath}/private.key`, privateKey);
   writeFileSync(`${certsPath}/public.key`, publicKey);
 

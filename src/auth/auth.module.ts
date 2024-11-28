@@ -25,7 +25,7 @@ import { PrismaModule } from '../prisma/prisma.module';
   controllers: [AuthController],
   providers: [
     AuthService,
-    TokenService,  // Make sure TokenService is listed here
+    TokenService, 
     JwtStrategy,
     JwtAuthGuard,
   ],

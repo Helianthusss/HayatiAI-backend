@@ -1,5 +1,3 @@
-// src/auth/services/token.service.ts
-
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -127,7 +125,7 @@ export class TokenService {
    }));
  }
 
- @Cron('0 0 * * *') // Run daily
+ @Cron('0 0 * * *') 
  async cleanupExpiredSessions() {
    await this.prisma.session.deleteMany({
      where: {

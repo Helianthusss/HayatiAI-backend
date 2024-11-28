@@ -25,17 +25,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     type?: string;
     sessionId?: string;
   }) {
-    // Verify token type
+
     if (payload.type !== 'access') {
       throw new UnauthorizedException('Invalid token type');
     }
 
-    // Check if session exists
     if (!payload.sessionId) {
       throw new UnauthorizedException('No session found');
     }
 
-    // Verify session is valid
     const session = await this.prisma.session.findUnique({
       where: {
         id: payload.sessionId,
