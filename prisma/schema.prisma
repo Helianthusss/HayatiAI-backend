@@ -1,0 +1,96 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User model
+model User {
+  id            String     @id @default(uuid())
+  email         String?    @unique 
+  password      String?
+  name          String
+  provider      String     @default("local")
+  googleId      String?    @unique
+  telegramId    String?    @unique
+  whatsappId    String?    @unique
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  sessions      Session[]
+  isActive      Boolean    @default(true)
+  swipes        Swipe[]    @relation("SwipeUser")
+  swipedBy      Swipe[]    @relation("SwipeTarget")
+  chatsSent     Chat[]     @relation("Sender")
+  chatsReceived Chat[]     @relation("Receiver")
+  matchesAsUser1 Match[]   @relation("MatchUser1")
+  matchesAsUser2 Match[]   @relation("MatchUser2")
+  premiumAccess PremiumAccess?
+
+  @@index([email])
+}
+
+// Session model
+model Session {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceInfo    String?   
+  ipAddress     String?   
+  lastActivity  DateTime  @default(now())
+  expiresAt     DateTime  
+  isRevoked     Boolean   @default(false)
+  
+  @@index([userId])
+  @@index([isRevoked])
+}
+
+// Swipe model
+model Swipe {
+  id          String    @id @default(uuid())
+  userId      String
+  targetId    String
+  direction   String    // 'right' = like, 'left' = dislike
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation("SwipeUser", fields: [userId], references: [id])
+  target      User      @relation("SwipeTarget", fields: [targetId], references: [id])
+
+  @@unique([userId, targetId]) // Prevent duplicate swipes
+}
+
+// Match model
+model Match {
+  id          String    @id @default(uuid())
+  user1Id     String
+  user2Id     String
+  createdAt   DateTime  @default(now())
+
+  user1       User      @relation("MatchUser1", fields: [user1Id], references: [id])
+  user2       User      @relation("MatchUser2", fields: [user2Id], references: [id])
+
+  @@unique([user1Id, user2Id]) // Prevent duplicate matches
+}
+
+// Chat model
+model Chat {
+  id          String    @id @default(uuid())
+  senderId    String
+  receiverId  String
+  message     String
+  createdAt   DateTime  @default(now())
+
+  sender      User      @relation("Sender", fields: [senderId], references: [id])
+  receiver    User      @relation("Receiver", fields: [receiverId], references: [id])
+}
+
+// Premium Access model
+model PremiumAccess {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  activatedAt DateTime  @default(now())
+  expiresAt   DateTime
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
