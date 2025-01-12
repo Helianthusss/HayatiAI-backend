@@ -9,9 +9,9 @@ async function bootstrap() {
   // Setup validation pipe globally
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Chỉ cho phép các properties đã được định nghĩa
-      transform: true, // Tự động transform types
-      forbidNonWhitelisted: true, // Throw error nếu có properties không được định nghĩa
+      whitelist: true, 
+      transform: true, 
+      forbidNonWhitelisted: true, 
     }),
   );
 
